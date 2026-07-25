@@ -6,4 +6,4 @@ from core.game_logic import load_data
 @st.cache_data
 def get_game_data():
     """Loads game data for the app."""
-    return load_data("515_streamlit/game_data/game_data.pkl")
+    return load_data("data/revised-data/game_data.pkl")

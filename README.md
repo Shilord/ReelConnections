@@ -1,9 +1,11 @@
 # Reel Connections
-[![Coverage Status](https://coveralls.io/repos/github/Shilord/Data515_MediaAnalysis_FinalProj/badge.svg?branch=main)](https://coveralls.io/github/Shilord/Data515_MediaAnalysis_FinalProj?branch=main)
-![Workflow Status](https://github.com/Shilord/Data515_MediaAnalysis_FinalProj/actions/workflows/build_test.yml/badge.svg)  
+[![Coverage Status](https://coveralls.io/repos/github/Shilord/ReelConnections/badge.svg?branch=main)](https://coveralls.io/github/Shilord/ReelConnections?branch=main)
+![Workflow Status](https://github.com/Shilord/ReelConnections/actions/workflows/build_test.yml/badge.svg)  
+
+## **Developer Note:** This repository is an extended, solo continuation of a V1 project originally developed over a five-week period spanning February and March of 2026. While the foundation was built collaboratively for a school assignment (Data515 at the University of Washington), all commits, architecture changes, and feature expansions since are my own independent work.
 
 ## Background
-**Project Members:** Owen Guo, Zach Lubarsky, Henry Shi, Daniel Yan
+**Project Members:** Henry Shi, Owen Guo, Zach Lubarsky, Daniel Yan
 
 **Project Type:** Web App/Game
 
@@ -36,8 +38,8 @@ This project uses **Conda** to manage dependencies and ensure a consistent envir
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/Shilord/Data515_MediaAnalysis_FinalProj.git
-cd Data515_MediaAnalysis_FinalProj
+git clone https://github.com/Shilord/ReelConnections.git
+cd ReelConnections
 ```
 
 **2. Create the conda environment**
@@ -56,7 +58,7 @@ You should see `(reel-connections)` at the start of your terminal prompt confirm
 
 **4. Run the app**
 ```bash
-cd 515_streamlit
+cd streamlit
 streamlit run app.py
 ```
 
@@ -89,7 +91,7 @@ conda remove --name reel-connections --all
 
 From the repo root with the environment active:
 ```bash
-cd 515_streamlit
+cd streamlit
 coverage run -m unittest discover -s tests -t tests
 coverage report
 ```
@@ -97,6 +99,6 @@ coverage report
 ## Running the Linter
 
 ```bash
-pylint --recursive=y --source-roots=515_streamlit 515_streamlit/core/
-pylint --recursive=y --source-roots=515_streamlit 515_streamlit/tests/
+pylint --recursive=y --source-roots=streamlit streamlit/core/
+pylint --recursive=y --source-roots=streamlit streamlit/tests/
 ```
