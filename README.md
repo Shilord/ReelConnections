@@ -2,7 +2,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/Shilord/ReelConnections/badge.svg?branch=main)](https://coveralls.io/github/Shilord/ReelConnections?branch=main)
 ![Workflow Status](https://github.com/Shilord/ReelConnections/actions/workflows/build_test.yml/badge.svg)  
 
-## **Developer Note:** This repository is an extended, solo continuation of a V1 project originally developed over a five-week period spanning February and March of 2026. While the foundation was built collaboratively for a school assignment (Data515 at the University of Washington), all commits, architecture changes, and feature expansions since are my own independent work.
+## Developer Note
+This repository is an extended, solo continuation of a V1 project originally developed over a five-week period spanning February and March of 2026. While the foundation was built collaboratively for a school assignment (Data515 at the University of Washington), all commits, architecture changes, and feature expansions since are my own independent work.
 
 ## Background
 **Project Members:** Henry Shi, Owen Guo, Zach Lubarsky, Daniel Yan
