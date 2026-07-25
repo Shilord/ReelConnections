@@ -5,6 +5,9 @@ source-roots=streamlit
 # Ignore third-party packages to avoid false positives from e.g. streamlit internals
 ignore-paths=^.*site-packages.*$
 
+# Tells Pylint to ignore missing member errors for dynamically generated attributes like session_state
+generated-members=st.session_state,streamlit.session_state
+
 [MESSAGES CONTROL]
 # E0401 import-error: pylint can't always resolve runtime imports (e.g. streamlit,
 # conda packages). These are caught by actually running the code, not linting.
