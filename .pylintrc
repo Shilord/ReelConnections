@@ -1,6 +1,6 @@
 [MASTER]
 # Tell pylint where the source root is so 'core.*' imports resolve correctly
-source-roots=515_streamlit
+source-roots=streamlit
 
 # Ignore third-party packages to avoid false positives from e.g. streamlit internals
 ignore-paths=^.*site-packages.*$
