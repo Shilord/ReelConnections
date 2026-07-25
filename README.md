@@ -1,5 +1,5 @@
 # Reel Connections
-[![Coverage Status](https://coveralls.io/repos/github/Shilord/ReelConnections/badge.svg?branch=main)](https://coveralls.io/github/Shilord/ReelConnections?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/Shilord/ReelConnections/badge.svg?branch=redirect-and-readme-updates)](https://coveralls.io/github/Shilord/ReelConnections?branch=redirect-and-readme-updates)
 ![Workflow Status](https://github.com/Shilord/ReelConnections/actions/workflows/build_test.yml/badge.svg)  
 
 ## Developer Note
