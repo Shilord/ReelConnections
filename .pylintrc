@@ -6,7 +6,8 @@ source-roots=streamlit
 ignore-paths=^.*site-packages.*$
 
 # Tells Pylint to ignore missing member errors for dynamically generated attributes like session_state
-generated-members=st.session_state,streamlit.session_state
+# which Pylint's static analysis engine cannot resolve
+generated-members=streamlit.*,st.*
 
 [MESSAGES CONTROL]
 # E0401 import-error: pylint can't always resolve runtime imports (e.g. streamlit,
