@@ -122,48 +122,65 @@ def render():
         st.error("No movies found for this actor.")
         return
 
-    selected_movie_id = st.selectbox(
-        "Choose a Movie",
-        options=list(valid_movies.keys()),
-        format_func=lambda mid: valid_movies[mid],
-        key="movie_select",
+    st.markdown(
+        """
+        <style>
+        div.st-key-selection_box {
+            background-color: rgba(125, 125, 125, 0.06);
+            border: 1px solid rgba(125, 125, 125, 0.2);
+            border-radius: 14px;
+            padding: 1.5rem 1.75rem 1.75rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            margin-bottom: 3rem;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
     )
 
-    cast_dict = {
-        aid: name
-        for aid, name in get_actors_for_movie(selected_movie_id, data).items()
-        if aid != current_actor
-    }
-
-    if not cast_dict:
-        st.error("No other actors found in this movie.")
-        return
-
-    # Keying the widget by the selected movie forces it to remount whenever the
-    # movie changes, so the actor selection is forcibly reset to that movie's
-    # cast instead of silently keeping the previous movie's selection until
-    # the user manually interacts with the dropdown.
-    actor_key = f"next_actor_select_{selected_movie_id}"
-    prev_actor_key = st.session_state.get("_active_actor_key")
-    if prev_actor_key and prev_actor_key != actor_key:
-        st.session_state.pop(prev_actor_key, None)
-    st.session_state._active_actor_key = actor_key
-
-    next_actor_id = st.selectbox(
-        "Next Actor (type to search, or open the menu to select)",
-        options=list(cast_dict.keys()),
-        format_func=lambda aid: cast_dict[aid],
-        key=actor_key,
-    )
-
-    if st.button("Confirm"):
-        boxoffice = data["movies"][selected_movie_id]["box_office"]
-        submit_step(
-            valid_movies[selected_movie_id],
-            next_actor_id,
-            movie_boxoffice=boxoffice,
+    with st.container(key="selection_box"):
+        selected_movie_id = st.selectbox(
+            "Choose a Movie",
+            options=list(valid_movies.keys()),
+            format_func=lambda mid: valid_movies[mid],
+            key="movie_select",
         )
-        st.rerun()
+
+        cast_dict = {
+            aid: name
+            for aid, name in get_actors_for_movie(selected_movie_id, data).items()
+            if aid != current_actor
+        }
+
+        if not cast_dict:
+            st.error("No other actors found in this movie.")
+            return
+
+        # Keying the widget by the selected movie forces it to remount whenever
+        # the movie changes, so the actor selection is forcibly reset to that
+        # movie's cast instead of silently keeping the previous movie's
+        # selection until the user manually interacts with the dropdown.
+        actor_key = f"next_actor_select_{selected_movie_id}"
+        prev_actor_key = st.session_state.get("_active_actor_key")
+        if prev_actor_key and prev_actor_key != actor_key:
+            st.session_state.pop(prev_actor_key, None)
+        st.session_state._active_actor_key = actor_key
+
+        next_actor_id = st.selectbox(
+            "Next Actor (type to search, or open the menu to select)",
+            options=list(cast_dict.keys()),
+            format_func=lambda aid: cast_dict[aid],
+            key=actor_key,
+        )
+
+        if st.button("Confirm"):
+            boxoffice = data["movies"][selected_movie_id]["box_office"]
+            submit_step(
+                valid_movies[selected_movie_id],
+                next_actor_id,
+                movie_boxoffice=boxoffice,
+            )
+            st.rerun()
 
     # ---------- bottom buttons ----------
     colA, colB = st.columns(2)
