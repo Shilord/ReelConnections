@@ -117,11 +117,21 @@ def render():
     )
 
     with st.container(key="selection_box"):
+        # Keying the widget by the current actor forces it to remount whenever
+        # the actor changes (including on Restart), so the movie selection is
+        # forcibly reset instead of silently keeping the previous actor's
+        # selection until the user manually interacts with the dropdown.
+        movie_key = f"movie_select_{current_actor}"
+        prev_movie_key = st.session_state.get("_active_movie_key")
+        if prev_movie_key and prev_movie_key != movie_key:
+            st.session_state.pop(prev_movie_key, None)
+        st.session_state._active_movie_key = movie_key
+
         selected_movie_id = st.selectbox(
             "Choose a Movie",
             options=list(valid_movies.keys()),
             format_func=lambda mid: valid_movies[mid],
-            key="movie_select",
+            key=movie_key,
         )
 
         cast_dict = {
