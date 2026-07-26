@@ -15,13 +15,6 @@ def render():
 
     data = st.session_state.game_data
 
-    # ---------- session helpers ----------
-    if "_cast_cache_movie" not in st.session_state:
-        st.session_state._cast_cache_movie = None
-
-    if "_cast_cache" not in st.session_state:
-        st.session_state._cast_cache = {}
-
     # ---------- header + hint ----------
     col_title, col_hint = st.columns([4,2])
 
@@ -100,83 +93,50 @@ def render():
 
     st.markdown("---")
 
-    # ---------- movie selection ----------
+    # ---------- movie + actor selection ----------
     valid_movies = get_movies_for_actor(current_actor, data)
 
     if not valid_movies:
         st.error("No movies found for this actor.")
         return
 
-    # ---------- movie selection ----------
-    valid_movies = get_movies_for_actor(current_actor, data)
+    selected_movie_id = st.selectbox(
+        "Choose a Movie",
+        options=list(valid_movies.keys()),
+        format_func=lambda mid: valid_movies[mid],
+        key="movie_select",
+    )
 
-    if not valid_movies:
-        st.error("No movies found for this actor.")
+    cast_dict = {
+        aid: name
+        for aid, name in get_actors_for_movie(selected_movie_id, data).items()
+        if aid != current_actor
+    }
+
+    if not cast_dict:
+        st.error("No other actors found in this movie.")
         return
 
-    # Show movie dropdown only if no movie has been confirmed yet
-    if st.session_state._cast_cache_movie is None:
+    # Keying the widget by the selected movie forces it to remount whenever the
+    # movie changes, so the actor selection is forcibly reset to that movie's
+    # cast instead of silently keeping the previous movie's selection until
+    # the user manually interacts with the dropdown.
+    actor_key = f"next_actor_select_{selected_movie_id}"
+    prev_actor_key = st.session_state.get("_active_actor_key")
+    if prev_actor_key and prev_actor_key != actor_key:
+        st.session_state.pop(prev_actor_key, None)
+    st.session_state._active_actor_key = actor_key
 
-        with st.form("movie_confirm_form", clear_on_submit=False):
+    next_actor_id = st.selectbox(
+        "Next Actor (type to search, or open the menu to select)",
+        options=list(cast_dict.keys()),
+        format_func=lambda aid: cast_dict[aid],
+        key=actor_key,
+    )
 
-            selected_movie_id = st.selectbox(
-                "Choose a Movie",
-                options=list(valid_movies.keys()),
-                format_func=lambda mid: valid_movies[mid],
-                key="movie_select",
-            )
-
-            movie_confirmed = st.form_submit_button("Confirm Movie")
-
-        if movie_confirmed:
-            st.session_state._cast_cache_movie = selected_movie_id
-            st.session_state._cast_cache = get_actors_for_movie(selected_movie_id, data)
-            st.rerun()
-
-    # After confirmation, hide dropdown and show fixed selected movie
-    else:
-        confirmed_movie_id = st.session_state._cast_cache_movie
-        st.success(f"Selected Movie: {valid_movies[confirmed_movie_id]}")
-
-    # ---------- actor selection ----------
-    if st.session_state._cast_cache_movie:
-
-        cast_dict = st.session_state._cast_cache
-
-        cast_dict = {
-            aid: name
-            for aid, name in cast_dict.items()
-            if aid != current_actor
-        }
-
-        if not cast_dict:
-            st.error("No other actors found in this movie.")
-            return
-
-        with st.form("actor_confirm_form_normal", clear_on_submit=False):
-
-            next_actor_id = st.selectbox(
-                "Next Actor (type to search, or open the menu to select)",
-                options=list(cast_dict.keys()),
-                format_func=lambda aid: cast_dict[aid],
-                key="next_actor_select",
-            )
-
-            confirmed = st.form_submit_button("Confirm Next Actor")
-
-        if confirmed:
-
-            movie_id = st.session_state._cast_cache_movie
-
-            submit_step(
-                valid_movies[movie_id],
-                next_actor_id,
-            )
-
-            st.session_state._cast_cache_movie = None
-            st.session_state._cast_cache = {}
-
-            st.rerun()
+    if st.button("Confirm"):
+        submit_step(valid_movies[selected_movie_id], next_actor_id)
+        st.rerun()
 
     # ---------- bottom buttons ----------
     colA, colB = st.columns(2)

@@ -69,6 +69,14 @@ def reset_game():
     st.session_state.message = ""
     st.session_state.current_game = None
 
+    # Clear the movie/actor selection widgets so a leftover selection from the
+    # previous game (which may not exist in the new game's options) doesn't
+    # get reused and crash the selectbox on the next render.
+    st.session_state.pop("movie_select", None)
+    active_actor_key = st.session_state.pop("_active_actor_key", None)
+    if active_actor_key:
+        st.session_state.pop(active_actor_key, None)
+
 
 def go_home():
     """Return to the home view and clear any active game."""
