@@ -9,7 +9,7 @@ from core.game_logic import (
 def render():
     init_state()
 
-    st.title("Result")
+    st.title(body="Result", anchor=False)
     st.write(st.session_state.message)
 
     if not st.session_state.current_game:
@@ -52,7 +52,7 @@ def render():
 
     st.markdown("---")
 
-    st.subheader("Your Path")
+    st.subheader(body="Your Path", anchor=False)
 
     for actor_a, movie, actor_b in st.session_state.history:
 
@@ -63,7 +63,7 @@ def render():
 
     st.markdown("---")
 
-    st.subheader("Optimal Path")
+    st.subheader(body="Optimal Path", anchor=False)
 
     optimal_path = optimal_data["path"]
 
