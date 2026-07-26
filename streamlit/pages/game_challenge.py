@@ -129,12 +129,6 @@ def render():
         key="movie_select",
     )
 
-    # Reset the actor selection whenever the chosen movie changes, so the
-    # dropdown never holds a co-star id left over from a different movie.
-    if st.session_state.get("_prev_movie_select") != selected_movie_id:
-        st.session_state._prev_movie_select = selected_movie_id
-        st.session_state.pop("next_actor_select", None)
-
     cast_dict = {
         aid: name
         for aid, name in get_actors_for_movie(selected_movie_id, data).items()
@@ -145,11 +139,21 @@ def render():
         st.error("No other actors found in this movie.")
         return
 
+    # Keying the widget by the selected movie forces it to remount whenever the
+    # movie changes, so the actor selection is forcibly reset to that movie's
+    # cast instead of silently keeping the previous movie's selection until
+    # the user manually interacts with the dropdown.
+    actor_key = f"next_actor_select_{selected_movie_id}"
+    prev_actor_key = st.session_state.get("_active_actor_key")
+    if prev_actor_key and prev_actor_key != actor_key:
+        st.session_state.pop(prev_actor_key, None)
+    st.session_state._active_actor_key = actor_key
+
     next_actor_id = st.selectbox(
         "Next Actor (type to search, or open the menu to select)",
         options=list(cast_dict.keys()),
         format_func=lambda aid: cast_dict[aid],
-        key="next_actor_select",
+        key=actor_key,
     )
 
     if st.button("Confirm"):
