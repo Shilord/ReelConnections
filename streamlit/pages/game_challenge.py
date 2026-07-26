@@ -33,6 +33,7 @@ def render():
         st.markdown(
             "<h1 style='text-align:center; margin-bottom:10px;'>Challenge Mode</h1>",
             unsafe_allow_html=True,
+            anchors=False
         )
 
         st.markdown(
@@ -81,11 +82,13 @@ def render():
         st.markdown(
             "<h4 style='text-align:center;'>Start Actor</h4>",
             unsafe_allow_html=True,
+            anchors=False
         )
 
         st.markdown(
             f"<h3 style='text-align:center; margin-top:12px;'>{current_name}</h3>",
             unsafe_allow_html=True,
+            anchors=False
         )
 
     with col_right:
@@ -93,11 +96,13 @@ def render():
         st.markdown(
             "<h4 style='text-align:center;'>Target Actor</h4>",
             unsafe_allow_html=True,
+            anchors=False
         )
 
         st.markdown(
             f"<h3 style='text-align:center; margin-top:12px;'>{target_name}</h3>",
             unsafe_allow_html=True,
+            anchors=False
         )
 
     st.markdown("---")
