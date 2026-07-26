@@ -17,6 +17,7 @@ game_data.pkl   – Python dict with keys:
 import pickle
 import random
 import heapq
+import requests
 from collections import deque
 from pathlib import Path
 from typing import Optional
@@ -632,3 +633,32 @@ def check_player_solution(player_selection: str, target_actor_id: str) -> bool:
     if player_selection == target_actor_id:
         return True
     return False
+
+# ---------------------------------------------------------------------------
+# 12. Fetch actor images
+# ---------------------------------------------------------------------------
+
+API_KEY = "cc0093b5ad09a876190e097a1c2c8e65"
+
+def actor_image(person_id):
+    """
+    Fetch the profile image URL for a given actor using The Movie Database (TMDb) API.
+
+    Parameters
+    ----------
+    person_id : str
+        The TMDb person ID of the actor.
+
+    Returns
+    -------
+    str or None
+        The full URL to the actor's profile image if available, otherwise None.
+    """
+    resp = requests.get(
+        f"https://api.themoviedb.org/3/person/{person_id}",
+        params={"api_key": API_KEY},
+    )
+    resp.raise_for_status()
+    person = resp.json()
+    profile_path = person.get("profile_path")
+    return f"https://image.tmdb.org/t/p/w185{profile_path}" if profile_path else None,
