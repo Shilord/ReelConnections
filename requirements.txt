@@ -1,6 +1,6 @@
 pandas
 numpy
-streamlit
+streamlit>=1.60.0
 pylint
 coverage
 pyarrow==23.0.1

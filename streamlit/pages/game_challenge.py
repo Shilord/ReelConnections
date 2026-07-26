@@ -12,7 +12,19 @@ from core.game_logic import (
     calculate_lowest_boxoffice_path,
     get_movies_for_actor,
     get_actors_for_movie,
+    actor_image
 )
+
+def format_box_office(value):
+    if value is None:
+        return "N/A"
+    if value >= 1_000_000_000_000:
+        return f"${value / 1_000_000_000_000:.1f}T"
+    if value >= 1_000_000_000:
+        return f"${value / 1_000_000_000:.1f}B"
+    if value >= 1_000_000:
+        return f"${value / 1_000_000:.1f}M"
+    return f"${value:,}"
 
 def render():
     init_state()
@@ -33,10 +45,12 @@ def render():
         st.markdown(
             "<h1 style='text-align:center; margin-bottom:10px;'>Challenge Mode</h1>",
             unsafe_allow_html=True,
+            anchors=False
         )
 
         st.markdown(
-            f"<p style='text-align:center; font-size:18px;'>Total Box Office: {st.session_state.total_boxoffice}</p>",
+            f"<p style='text-align:center; font-size:18px;'>"
+            f"Total Box Office: {format_box_office(st.session_state.total_boxoffice)}</p>",
             unsafe_allow_html=True,
         )
 
@@ -77,28 +91,34 @@ def render():
     col_left, col_right = st.columns(2)
 
     with col_left:
+        _, mid, _ = st.columns([1, 2, 1])
+        with mid:
+            st.markdown(
+                "<h4 style='text-align:center;'>Current Actor</h4>",
+                unsafe_allow_html=True,
+                anchors=False
+            )
 
-        st.markdown(
-            "<h4 style='text-align:center;'>Start Actor</h4>",
-            unsafe_allow_html=True,
-        )
-
-        st.markdown(
-            f"<h3 style='text-align:center; margin-top:12px;'>{current_name}</h3>",
-            unsafe_allow_html=True,
-        )
+            image = actor_image(current_actor)
+            if image:
+                st.image(image, caption=current_name, width=185)
+            else:
+                st.info(f"No photo available for {current_name}.")
 
     with col_right:
+        _, mid, _ = st.columns([1, 2, 1])
+        with mid:
+            st.markdown(
+                "<h4 style='text-align:center;'>Target Actor</h4>",
+                unsafe_allow_html=True,
+                anchors=False
+            )
 
-        st.markdown(
-            "<h4 style='text-align:center;'>Target Actor</h4>",
-            unsafe_allow_html=True,
-        )
-
-        st.markdown(
-            f"<h3 style='text-align:center; margin-top:12px;'>{target_name}</h3>",
-            unsafe_allow_html=True,
-        )
+            image = actor_image(target_actor)
+            if image:
+                st.image(image, caption=target_name, width=185)
+            else:
+                st.info(f"No photo available for {target_name}.")
 
     st.markdown("---")
 

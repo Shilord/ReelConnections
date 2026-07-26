@@ -23,8 +23,9 @@ def render():
     )
 
     st.markdown(
-        "<h1 style='text-align:center;'>Movie Actor Link Game</h1>",
+        "<h1 style='text-align:center;'>Reel Connections</h1>",
         unsafe_allow_html=True,
+        anchors=False
     )
 
     with st.expander("🎮 How to Play", expanded=True):
