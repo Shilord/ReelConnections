@@ -17,11 +17,11 @@ game_data.pkl   – Python dict with keys:
 import pickle
 import random
 import heapq
-import requests
 from collections import deque
 from pathlib import Path
 from typing import Optional
 
+import requests
 import pandas as pd
 
 # ---------------------------------------------------------------------------
@@ -654,11 +654,16 @@ def actor_image(person_id):
     str or None
         The full URL to the actor's profile image if available, otherwise None.
     """
-    resp = requests.get(
-        f"https://api.themoviedb.org/3/person/{person_id}",
-        params={"api_key": API_KEY},
-    )
-    resp.raise_for_status()
+    try:
+        resp = requests.get(
+            f"https://api.themoviedb.org/3/person/{person_id}",
+            params={"api_key": API_KEY},
+            timeout=10
+        )
+        resp.raise_for_status()
+    except requests.exceptions.RequestException:
+        return None
+
     person = resp.json()
     profile_path = person.get("profile_path")
-    return f"https://image.tmdb.org/t/p/w185{profile_path}" if profile_path else None,
+    return f"https://image.tmdb.org/t/p/w185{profile_path}" if profile_path else None
