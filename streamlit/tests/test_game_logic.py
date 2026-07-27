@@ -600,10 +600,10 @@ def _write_parquets(movies_rows, actors_rows, tmp_dir):
     Parameters
     ----------
     movies_rows : list of dict
-        Each dict must have: tconst, originalTitle, startYear,
-        adjusted_box_office, personIds.
+        Each dict must have: movie_id, original_title, year,
+        adjusted_revenue, actors.
     actors_rows : list of dict
-        Each dict must have: nconst, primaryName.
+        Each dict must have: tmdb_id, name.
     tmp_dir : str
         Directory to write the parquet files into.
 
@@ -621,25 +621,25 @@ def _write_parquets(movies_rows, actors_rows, tmp_dir):
 
 _MOVIES_ROWS = [
     {
-        "tconst": "tt0001",
-        "originalTitle": "Alpha Movie",
-        "startYear": 2000.0,
-        "adjusted_box_office": 100.0,
-        "personIds": "nm0001, nm0002",
+        "movie_id": "tt0001",
+        "original_title": "Alpha Movie",
+        "year": 2000.0,
+        "adjusted_revenue": 100.0,
+        "actors": "nm0001, nm0002",
     },
     {
-        "tconst": "tt0002",
-        "originalTitle": "Beta Movie",
-        "startYear": 2001.0,
-        "adjusted_box_office": 200.0,
-        "personIds": "nm0002, nm0003",
+        "movie_id": "tt0002",
+        "original_title": "Beta Movie",
+        "year": 2001.0,
+        "adjusted_revenue": 200.0,
+        "actors": "nm0002, nm0003",
     },
 ]
 
 _ACTORS_ROWS = [
-    {"nconst": "nm0001", "primaryName": "Alice"},
-    {"nconst": "nm0002", "primaryName": "Bob"},
-    {"nconst": "nm0003", "primaryName": "Carol"},
+    {"tmdb_id": "nm0001", "name": "Alice"},
+    {"tmdb_id": "nm0002", "name": "Bob"},
+    {"tmdb_id": "nm0003", "name": "Carol"},
 ]
 
 
@@ -731,29 +731,29 @@ class TestBuildAndSaveMovies(unittest.TestCase):
         self.assertIsInstance(self.data["movies"]["tt0001"]["box_office"], float)
 
     def test_movie_box_office_value(self):
-        """box_office should match the adjusted_box_office from the parquet."""
+        """box_office should match the adjusted_revenue from the parquet."""
         self.assertEqual(self.data["movies"]["tt0001"]["box_office"], 100.0)
 
     def test_movie_actor_ids_parsed(self):
-        """actor_ids should be a list parsed from the comma-separated personIds."""
+        """actor_ids should be a list parsed from the comma-separated actors column."""
         self.assertEqual(
             sorted(self.data["movies"]["tt0001"]["actor_ids"]),
             ["nm0001", "nm0002"]
         )
 
     def test_movie_actor_ids_whitespace_stripped(self):
-        """Whitespace around actor IDs in personIds should be stripped."""
+        """Whitespace around actor IDs in the actors column should be stripped."""
         for actor_id in self.data["movies"]["tt0001"]["actor_ids"]:
             self.assertEqual(actor_id, actor_id.strip())
 
     def test_movie_with_no_year(self):
-        """A movie with no startYear should have a title without a year suffix."""
+        """A movie with no year should have a title without a year suffix."""
         rows = [{
-            "tconst": "tt0099",
-            "originalTitle": "No Year Movie",
-            "startYear": None,
-            "adjusted_box_office": 50.0,
-            "personIds": "nm0001",
+            "movie_id": "tt0099",
+            "original_title": "No Year Movie",
+            "year": None,
+            "adjusted_revenue": 50.0,
+            "actors": "nm0001",
         }]
         movies_path, actors_path = _write_parquets(rows, _ACTORS_ROWS, self.tmp_dir)
         data = build_and_save(
@@ -762,13 +762,13 @@ class TestBuildAndSaveMovies(unittest.TestCase):
         self.assertEqual(data["movies"]["tt0099"]["title"], "No Year Movie")
 
     def test_zero_box_office_movie_excluded(self):
-        """Movies with adjusted_box_office of 0.0 should be filtered out."""
+        """Movies with adjusted_revenue of 0.0 should be filtered out."""
         rows = [{
-            "tconst": "tt0010",
-            "originalTitle": "Zero Movie",
-            "startYear": 2005.0,
-            "adjusted_box_office": 0.0,
-            "personIds": "nm0001",
+            "movie_id": "tt0010",
+            "original_title": "Zero Movie",
+            "year": 2005.0,
+            "adjusted_revenue": 0.0,
+            "actors": "nm0001",
         }]
         movies_path, actors_path = _write_parquets(rows, _ACTORS_ROWS, self.tmp_dir)
         data = build_and_save(
@@ -777,13 +777,13 @@ class TestBuildAndSaveMovies(unittest.TestCase):
         self.assertNotIn("tt0010", data["movies"])
 
     def test_none_box_office_excluded(self):
-        """Movies with None adjusted_box_office should be treated as 0.0 and excluded."""
+        """Movies with None adjusted_revenue should be treated as 0.0 and excluded."""
         rows = [{
-            "tconst": "tt0011",
-            "originalTitle": "None BO Movie",
-            "startYear": 2005.0,
-            "adjusted_box_office": None,
-            "personIds": "nm0001",
+            "movie_id": "tt0011",
+            "original_title": "None BO Movie",
+            "year": 2005.0,
+            "adjusted_revenue": None,
+            "actors": "nm0001",
         }]
         movies_path, actors_path = _write_parquets(rows, _ACTORS_ROWS, self.tmp_dir)
         data = build_and_save(
@@ -810,7 +810,7 @@ class TestBuildAndSaveActors(unittest.TestCase):
             self.assertIn(actor_id, self.data["actors"])
 
     def test_actor_name_correct(self):
-        """Actor name should match primaryName from the parquet."""
+        """Actor name should match the name column from the parquet."""
         self.assertEqual(self.data["actors"]["nm0001"]["name"], "Alice")
 
     def test_actor_movie_ids_is_list(self):
@@ -830,7 +830,7 @@ class TestBuildAndSaveActors(unittest.TestCase):
 
     def test_actor_with_no_movies_excluded(self):
         """Actors not linked to any movie should be excluded from the result."""
-        actors_with_extra = _ACTORS_ROWS + [{"nconst": "nm9999", "primaryName": "Nobody"}]
+        actors_with_extra = _ACTORS_ROWS + [{"tmdb_id": "nm9999", "name": "Nobody"}]
         movies_path, actors_path = _write_parquets(
             _MOVIES_ROWS, actors_with_extra, self.tmp_dir
         )
@@ -842,18 +842,42 @@ class TestBuildAndSaveActors(unittest.TestCase):
     def test_actor_excluded_when_only_movie_has_zero_box_office(self):
         """An actor whose only movie has zero box office should be excluded."""
         rows = [{
-            "tconst": "tt0020",
-            "originalTitle": "Flop",
-            "startYear": 2000.0,
-            "adjusted_box_office": 0.0,
-            "personIds": "nm9998",
+            "movie_id": "tt0020",
+            "original_title": "Flop",
+            "year": 2000.0,
+            "adjusted_revenue": 0.0,
+            "actors": "nm9998",
         }]
-        actors = [{"nconst": "nm9998", "primaryName": "Flop Actor"}]
+        actors = [{"tmdb_id": "nm9998", "name": "Flop Actor"}]
         movies_path, actors_path = _write_parquets(rows, actors, self.tmp_dir)
         data = build_and_save(
             movies_path, actors_path, os.path.join(self.tmp_dir, "flop.pkl")
         )
         self.assertNotIn("nm9998", data["actors"])
+
+    def test_actor_id_matches_when_tmdb_id_is_int(self):
+        """An integer tmdb_id should still match the string actor tokens parsed
+        from the movies' actors column.
+
+        Regression test: build_and_save() str()s tmdb_id before using it as a
+        dict key/lookup, since actor tokens parsed out of the actors column
+        are always strings. Without that cast, an int tmdb_id would never
+        match and would look like it had zero movies.
+        """
+        rows = [{
+            "movie_id": "tt0030",
+            "original_title": "Int ID Movie",
+            "year": 2010.0,
+            "adjusted_revenue": 75.0,
+            "actors": "42",
+        }]
+        actors = [{"tmdb_id": 42, "name": "Int Actor"}]
+        movies_path, actors_path = _write_parquets(rows, actors, self.tmp_dir)
+        data = build_and_save(
+            movies_path, actors_path, os.path.join(self.tmp_dir, "int_id.pkl")
+        )
+        self.assertIn("42", data["actors"])
+        self.assertEqual(data["actors"]["42"]["movie_ids"], ["tt0030"])
 
 
 class TestBuildAndSaveEdgeCases(unittest.TestCase):
@@ -875,13 +899,13 @@ class TestBuildAndSaveEdgeCases(unittest.TestCase):
     def test_single_movie_single_actor(self):
         """A single movie with a single actor should produce one movie and one actor."""
         rows = [{
-            "tconst": "tt0001",
-            "originalTitle": "Solo",
-            "startYear": 1999.0,
-            "adjusted_box_office": 10.0,
-            "personIds": "nm0001",
+            "movie_id": "tt0001",
+            "original_title": "Solo",
+            "year": 1999.0,
+            "adjusted_revenue": 10.0,
+            "actors": "nm0001",
         }]
-        actors = [{"nconst": "nm0001", "primaryName": "Solo Actor"}]
+        actors = [{"tmdb_id": "nm0001", "name": "Solo Actor"}]
         movies_path, actors_path = _write_parquets(rows, actors, self.tmp_dir)
         data = build_and_save(
             movies_path, actors_path, os.path.join(self.tmp_dir, "solo.pkl")
@@ -893,23 +917,23 @@ class TestBuildAndSaveEdgeCases(unittest.TestCase):
         """If every movie has zero box office, both dicts should be empty."""
         rows = [
             {
-                "tconst": "tt0001",
-                "originalTitle": "Flop One",
-                "startYear": 2000.0,
-                "adjusted_box_office": 0.0,
-                "personIds": "nm0001",
+                "movie_id": "tt0001",
+                "original_title": "Flop One",
+                "year": 2000.0,
+                "adjusted_revenue": 0.0,
+                "actors": "nm0001",
             },
             {
-                "tconst": "tt0002",
-                "originalTitle": "Flop Two",
-                "startYear": 2001.0,
-                "adjusted_box_office": 0.0,
-                "personIds": "nm0002",
+                "movie_id": "tt0002",
+                "original_title": "Flop Two",
+                "year": 2001.0,
+                "adjusted_revenue": 0.0,
+                "actors": "nm0002",
             },
         ]
         actors = [
-            {"nconst": "nm0001", "primaryName": "Alice"},
-            {"nconst": "nm0002", "primaryName": "Bob"},
+            {"tmdb_id": "nm0001", "name": "Alice"},
+            {"tmdb_id": "nm0002", "name": "Bob"},
         ]
         movies_path, actors_path = _write_parquets(rows, actors, self.tmp_dir)
         data = build_and_save(
