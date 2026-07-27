@@ -13,10 +13,6 @@ def init_state():
     if "current_view" not in st.session_state:
         st.session_state.current_view = "home"
 
-    # Load the preprocessed dataset once (cached by Streamlit)
-    if "game_data" not in st.session_state:
-        st.session_state.game_data = get_game_data()
-
     # Stores the current generated game (start/target actors + optimal path, etc.)
     if "current_game" not in st.session_state:
         st.session_state.current_game = None
@@ -26,6 +22,16 @@ def init_state():
     # -----------------------------
     if "mode" not in st.session_state:
         st.session_state.mode = None
+
+    # Which mode button was clicked on the home page, awaiting a difficulty
+    # selection ("normal"/"challenge"), or None while showing the mode buttons.
+    if "pending_mode" not in st.session_state:
+        st.session_state.pending_mode = None
+
+    # Difficulty tier ("easy"/"medium"/"hard") the current game was started
+    # with; also picks which game_data*.pkl gets loaded via get_game_data().
+    if "difficulty" not in st.session_state:
+        st.session_state.difficulty = None
 
     if "start_actor" not in st.session_state:
         st.session_state.start_actor = None
@@ -85,12 +91,27 @@ def go_home():
     """Return to the home view and clear any active game."""
     st.session_state.current_view = "home"
     st.session_state.mode = None
+    st.session_state.pending_mode = None
     reset_game()
 
 
-def start_normal_mode():
-    """Generate a shortest-path game and transition to the game view."""
+def select_mode(mode):
+    """Record which mode button was clicked, revealing the difficulty picker."""
+    st.session_state.pending_mode = mode
+
+
+def cancel_mode_selection():
+    """Go back from the difficulty picker to the mode buttons."""
+    st.session_state.pending_mode = None
+
+
+def start_normal_mode(difficulty):
+    """Generate a shortest-path game at the given difficulty and transition to the game view."""
     reset_game()
+
+    st.session_state.difficulty = difficulty
+    st.session_state.pending_mode = None
+    st.session_state.game_data = get_game_data(difficulty)
 
     game = generate_game(
         "shortest",
@@ -109,9 +130,13 @@ def start_normal_mode():
     st.session_state.current_view = "game"
 
 
-def start_challenge_mode():
-    """Generate a lowest box-office game and transition to the challenge view."""
+def start_challenge_mode(difficulty):
+    """Generate a lowest box-office game at the given difficulty and transition to the challenge view."""
     reset_game()
+
+    st.session_state.difficulty = difficulty
+    st.session_state.pending_mode = None
+    st.session_state.game_data = get_game_data(difficulty)
 
     game = generate_game(
         "box_office",

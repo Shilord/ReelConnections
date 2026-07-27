@@ -1,6 +1,19 @@
 import streamlit as st
 
-from core.state import start_normal_mode, start_challenge_mode, init_state
+from core.state import (
+    init_state,
+    select_mode,
+    cancel_mode_selection,
+    start_normal_mode,
+    start_challenge_mode,
+)
+
+DIFFICULTY_OPTIONS = {
+    "Easy (Top 1,000 actors)": "easy",
+    "Medium (Top 3,000 actors)": "medium",
+    "Hard (Top 5,000 actors)": "hard",
+}
+
 
 def render():
     init_state()
@@ -50,14 +63,47 @@ def render():
 
     st.markdown("---")
 
-    _, col1, spacer, col2, _ = st.columns([1.2, 1.25, 0.4, 1.25, 1.2])
+    if st.session_state.pending_mode is None:
+        _, col1, spacer, col2, _ = st.columns([1.2, 1.25, 0.4, 1.25, 1.2])
 
-    with col1:
-        if st.button("Normal Mode", use_container_width=True):
-            start_normal_mode()
-            st.rerun()
+        with col1:
+            if st.button("Normal Mode", use_container_width=True):
+                select_mode("normal")
+                st.rerun()
 
-    with col2:
-        if st.button("Challenge Mode", use_container_width=True):
-            start_challenge_mode()
-            st.rerun()
+        with col2:
+            if st.button("Challenge Mode", use_container_width=True):
+                select_mode("challenge")
+                st.rerun()
+
+    else:
+        mode_label = "Normal Mode" if st.session_state.pending_mode == "normal" else "Challenge Mode"
+        st.markdown(
+            f"<h3 style='text-align:center;'>{mode_label} — Choose a Difficulty</h3>",
+            unsafe_allow_html=True,
+            anchors=False
+        )
+
+        _, mid, _ = st.columns([1, 2, 1])
+        with mid:
+            difficulty_label = st.selectbox(
+                "Difficulty",
+                options=list(DIFFICULTY_OPTIONS.keys()),
+                key="difficulty_select",
+            )
+
+            col_confirm, col_back = st.columns(2)
+
+            with col_confirm:
+                if st.button("Confirm", use_container_width=True):
+                    difficulty = DIFFICULTY_OPTIONS[difficulty_label]
+                    if st.session_state.pending_mode == "normal":
+                        start_normal_mode(difficulty)
+                    else:
+                        start_challenge_mode(difficulty)
+                    st.rerun()
+
+            with col_back:
+                if st.button("Back", use_container_width=True):
+                    cancel_mode_selection()
+                    st.rerun()

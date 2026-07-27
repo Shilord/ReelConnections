@@ -196,7 +196,7 @@ def render():
     colA, colB = st.columns(2)
 
     if colA.button("Restart"):
-        start_challenge_mode()
+        start_challenge_mode(st.session_state.difficulty)
         st.rerun()
 
     if colB.button("Back to Home"):
