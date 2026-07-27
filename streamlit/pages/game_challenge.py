@@ -6,7 +6,7 @@ from core.state import (
     go_home,
     start_challenge_mode,
 )
-from core.UI_utils import game_mode_title, format_box_office
+from core.visual_utils import game_mode_title, format_box_office
 
 from core.game_logic import (
     calculate_shortest_path,

@@ -1,7 +1,7 @@
 import streamlit as st
 
 from core.state import init_state, go_home, start_normal_mode, start_challenge_mode
-from core.UI_utils import format_box_office
+from core.visual_utils import format_box_office
 from core.game_logic import (
     calculate_score_shortest,
     calculate_score_boxoffice,

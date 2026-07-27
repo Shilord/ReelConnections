@@ -1,7 +1,7 @@
 import streamlit as st
 from core.hints import get_realtime_hint
 from core.state import init_state, submit_step, go_home, start_normal_mode
-from core.UI_utils import game_mode_title
+from core.visual_utils import game_mode_title
 from core.game_logic import (
     calculate_shortest_path,
     calculate_lowest_boxoffice_path,
