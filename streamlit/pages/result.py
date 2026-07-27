@@ -6,6 +6,17 @@ from core.game_logic import (
     calculate_score_boxoffice,
 )
 
+def format_box_office(value):
+    if value is None:
+        return "N/A"
+    if value >= 1_000_000_000_000:
+        return f"${value / 1_000_000_000_000:.1f}T"
+    if value >= 1_000_000_000:
+        return f"${value / 1_000_000_000:.1f}B"
+    if value >= 1_000_000:
+        return f"${value / 1_000_000:.1f}M"
+    return f"${value:,}"
+
 def render():
     init_state()
 
@@ -37,8 +48,8 @@ def render():
 
         score = calculate_score_boxoffice(player_sum, optimal_sum)
 
-        st.write("Total Box Office:", player_sum)
-        st.write("Optimal Minimum Box Office:", optimal_sum)
+        st.write("Total Box Office:", format_box_office(player_sum))
+        st.write("Optimal Minimum Box Office:", format_box_office(optimal_sum))
         st.write("Score:", round(score, 2))
 
     if score == 100:
