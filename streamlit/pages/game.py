@@ -1,6 +1,7 @@
 import streamlit as st
 from core.hints import get_realtime_hint
 from core.state import init_state, submit_step, go_home, start_normal_mode
+from core.UI_utils import game_mode_title
 from core.game_logic import (
     calculate_shortest_path,
     calculate_lowest_boxoffice_path,
@@ -8,38 +9,6 @@ from core.game_logic import (
     get_actors_for_movie,
     actor_image
 )
-
-def game_mode_title(text, help_text=None):
-    st.markdown("""
-    <style>
-    .normal-mode-title {
-        font-size: 2.25rem;
-        font-weight: 700;
-        margin-bottom: 24px;
-        text-align: center !important;
-    }
-    /* Target the parent container when help is present */
-    .element-container:has(.normal-mode-title) {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        width: 100% !important;
-        flex-wrap: nowrap !important;
-    }
-    /* Keep the help icon inline */
-    .element-container:has(.normal-mode-title) > div {
-        display: flex !important;
-        align-items: center !important;
-        gap: 8px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown(
-        f"<div class='normal-mode-title'>{text}</div>",
-        unsafe_allow_html=True,
-        help=help_text
-    )
 
 def render():
     init_state()

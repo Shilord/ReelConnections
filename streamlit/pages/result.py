@@ -1,21 +1,11 @@
 import streamlit as st
 
 from core.state import init_state, go_home, start_normal_mode, start_challenge_mode
+from core.UI_utils import format_box_office
 from core.game_logic import (
     calculate_score_shortest,
     calculate_score_boxoffice,
 )
-
-def format_box_office(value):
-    if value is None:
-        return "N/A"
-    if value >= 1_000_000_000_000:
-        return f"${value / 1_000_000_000_000:.1f}T"
-    if value >= 1_000_000_000:
-        return f"${value / 1_000_000_000:.1f}B"
-    if value >= 1_000_000:
-        return f"${value / 1_000_000:.1f}M"
-    return f"${value:,}"
 
 def render():
     init_state()
