@@ -1,6 +1,7 @@
 import streamlit as st
 from core.hints import get_realtime_hint
 from core.state import init_state, submit_step, go_home, start_normal_mode
+from core.visual_utils import game_mode_title
 from core.game_logic import (
     calculate_shortest_path,
     calculate_lowest_boxoffice_path,
@@ -8,7 +9,6 @@ from core.game_logic import (
     get_actors_for_movie,
     actor_image
 )
-
 
 def render():
     init_state()
@@ -19,10 +19,11 @@ def render():
     col_title, col_hint = st.columns([4,2])
 
     with col_title:
-        st.markdown(
-            "<h1 style='text-align:center; margin-bottom:24px;'>Normal Mode</h1>",
-            unsafe_allow_html=True,
-            anchors=False
+        game_mode_title("Normal Mode",
+                        help_text="In Normal Mode, your goal is to connect the current actor to the target actor using the fewest number of movie+actor pairs. "
+                        "Each step involves selecting a movie that the current actor has appeared in, "
+                        "and then choosing another actor from that movie's cast to continue the path. "
+                        "The game continues until you reach the target actor."
         )
 
     with col_hint:
@@ -128,10 +129,11 @@ def render():
         st.session_state._active_movie_key = movie_key
 
         selected_movie_id = st.selectbox(
-            "Choose a Movie",
+            "Choose a Movie (type or scroll to select)",
             options=list(valid_movies.keys()),
             format_func=lambda mid: valid_movies[mid],
             key=movie_key,
+            help="Select a movie the current actor has appeared in. You can type to search for a movie or open the dropdown menu to see all available movies.",
         )
 
         cast_dict = {
@@ -155,10 +157,11 @@ def render():
         st.session_state._active_actor_key = actor_key
 
         next_actor_id = st.selectbox(
-            "Next Actor (type to search, or open the menu to select)",
+            "Next Actor (type or scroll to select)",
             options=list(cast_dict.keys()),
             format_func=lambda aid: cast_dict[aid],
             key=actor_key,
+            help="Select the next actor from the selected movie's cast. You can type to search for an actor or open the dropdown menu to see all available actors.",
         )
 
         if st.button("Confirm"):
