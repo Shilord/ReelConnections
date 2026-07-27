@@ -4,7 +4,7 @@ import streamlit as st
 from core.data_loader import get_game_data
 from core.game_logic import generate_game
 
-
+# pylint: disable=too-many-branches
 def init_state():
     """Initialise all session state keys if they don't already exist."""
     # -----------------------------
@@ -131,7 +131,8 @@ def start_normal_mode(difficulty):
 
 
 def start_challenge_mode(difficulty):
-    """Generate a lowest box-office game at the given difficulty and transition to the challenge view."""
+    """Generate a lowest box-office game at the given difficulty
+    and transition to the challenge view."""
     reset_game()
 
     st.session_state.difficulty = difficulty
