@@ -101,6 +101,18 @@ def build_and_save(
         movies[movie_id]["actor_ids"] = [
             aid for aid in movies[movie_id]["actor_ids"] if aid in actors]
 
+    # A movie only works as a "hop" if at least two of its actors survived the
+    # filtering above (e.g. when actors_parquet only covers a subset of the
+    # full actor pool, like a difficulty tier). Drop anything left with fewer
+    # than that, remove the now-dangling references from actors' movie_ids,
+    # and re-check for actors left with no movies at all as a result.
+    thin_movies = {mid for mid, info in movies.items() if len(info["actor_ids"]) < 2}
+    movies = {mid: info for mid, info in movies.items() if mid not in thin_movies}
+
+    for info in actors.values():
+        info["movie_ids"] = [mid for mid in info["movie_ids"] if mid not in thin_movies]
+    actors = {tmdb_id: info for tmdb_id, info in actors.items() if info["movie_ids"]}
+
     data = {"movies": movies, "actors": actors}
 
     with open(output_path, "wb") as f:
