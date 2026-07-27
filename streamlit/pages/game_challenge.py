@@ -26,6 +26,38 @@ def format_box_office(value):
         return f"${value / 1_000_000:.1f}M"
     return f"${value:,}"
 
+def game_mode_title(text, help_text=None):
+    st.markdown("""
+    <style>
+    .normal-mode-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        text-align: center !important;
+    }
+    /* Target the parent container when help is present */
+    .element-container:has(.normal-mode-title) {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        flex-wrap: nowrap !important;
+    }
+    /* Keep the help icon inline */
+    .element-container:has(.normal-mode-title) > div {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown(
+        f"<div class='normal-mode-title'>{text}</div>",
+        unsafe_allow_html=True,
+        help=help_text
+    )
+
 def render():
     init_state()
 
@@ -35,11 +67,14 @@ def render():
     col_title, col_hint = st.columns([4,2])
 
     with col_title:
-        st.markdown(
-            "<h1 style='text-align:center; margin-bottom:10px;'>Challenge Mode</h1>",
-            unsafe_allow_html=True,
-            anchors=False
+        game_mode_title("Challenge Mode",
+                        help_text="In Challenge Mode, your goal is to connect the current actor to the target actor using the lowest total box office revenue. "
+                        "Each step involves selecting a movie that the current actor has appeared in, "
+                        "and then choosing another actor from that movie's cast to continue the path. "
+                        "The box office value from the selected movie is added to your total box office revenue."
+                        "The game continues until you reach the target actor."
         )
+
 
         st.markdown(
             f"<p style='text-align:center; font-size:18px;'>"
@@ -150,10 +185,11 @@ def render():
         st.session_state._active_movie_key = movie_key
 
         selected_movie_id = st.selectbox(
-            "Choose a Movie",
+            "Choose a Movie (type or scroll to select)",
             options=list(valid_movies.keys()),
             format_func=lambda mid: valid_movies[mid],
             key=movie_key,
+            help="Select a movie the current actor has appeared in. You can type to search for a movie or open the dropdown menu to see all available movies.",
         )
 
         cast_dict = {
@@ -177,10 +213,11 @@ def render():
         st.session_state._active_actor_key = actor_key
 
         next_actor_id = st.selectbox(
-            "Next Actor (type to search, or open the menu to select)",
+            "Next Actor (type or scroll to select)",
             options=list(cast_dict.keys()),
             format_func=lambda aid: cast_dict[aid],
             key=actor_key,
+            help="Select the next actor from the selected movie's cast. You can type to search for an actor or open the dropdown menu to see all available actors.",
         )
 
         if st.button("Confirm"):

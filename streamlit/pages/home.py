@@ -41,23 +41,30 @@ def render():
         anchors=False
     )
 
-    with st.expander("🎮 How to Play", expanded=True):
+    with st.container(border=True):
+        st.markdown("<h3 style='text-align:center;'>How to Play</h3>", unsafe_allow_html=True, anchors=False)
         st.markdown(
             """
-            Connect the **Start Actor** to the **Target Actor** by hopping through movies and co-stars.
+            Connect the **Start Actor** to the **Target Actor** by hopping through movies and co-stars:
 
-            **How to play**
+            **Rules**
             1. Start from the current actor.
             2. Choose a movie that the actor appeared in.
-            3. Pick a co-star from that movie to become your next actor.
+            3. Pick a co-star from that movie to become your next current actor.
             4. Repeat until you reach the target actor.
 
-            **Game modes**
-            - **Normal Mode**: win in as **few steps** as possible (each move counts as 1 step).
-            - **Challenge Mode**: win with the **lowest total box office** (each chosen movie adds its box office to your total).
+            **Game Modes**
+            - **Normal Mode**: Win in as **few steps** as possible (each movie+actor pair counts as 1 step).
+            - **Challenge Mode**: Win with the **lowest total box office value** possible (each chosen movie adds its box office total to your total).
 
-            **🏆 Winning**
-            You win as soon as your current actor matches the target actor. Your score is compared to the algorithm’s optimal path.
+            **Difficulties**
+            - **Easy**: Only the top 500 actors in terms of popularity are included.
+            - **Medium**: Only the top 1,500 actors in terms of popularityare included.
+            - **Hard**: All top 5,000 actors in terms of popularity are included.
+
+            **Winning**
+            - You win as soon as your current actor matches the target actor.
+            - Your score is based on how your path compares to the optimal one.
             """
         )
 
