@@ -7,25 +7,40 @@
 ## Developer Note
 This repository is an extended, solo continuation of a V1 project originally developed over a five-week period spanning February and March of 2026. While the foundation was built collaboratively for a school assignment (Data515 at the University of Washington), all commits, architecture changes, and feature expansions since are my own independent work.
 
+## Game Info
+### What is Reel Connections: 
+This project aims to create a web app that allows users to test their movie and actor knowledge in the form of a game inspired by popular parlor game [Six Degrees of Kevin Bacon](https://en.wikipedia.org/wiki/Six_Degrees_of_Kevin_Bacon). In this game, users are given a random starting actor and random target actor. They then connect the starting actor to another actor through a film they both appear in, and repeat until they reach the target actor. The goal of the game is to reach the target actor in as few movie + actor combinations as possible. An alternate, more challenging game mode is featured as well, in which players once again choose movie + actor combinations to reach the target actor, but score higher the lower the total box office sales (adjusted for inflation) of their chosen movies is, incentivizing creative picks of less well-known movies over simply the shortest path to the target actor. For each game mode, three difficulty levels are offered (easier difficulties restrict the game to more popular actors).
+
+### How it Works:
+On the back-end of this game, data has been retrieved, processed, and formatted to create the necessary web of connections between actors and movies (please see **Data Sources**). This information is stored into efficient nested dictionaries, and search algorithms based on BFS and Dijkstra's algorithm are used to calculate the optimal solution between two random start and end actors. Scores are given to players based on how far their selections deviate from the optimal.
+
+### Data Sources:
+Data is collected from the following sources: 
+- ~~[IMDb's Non-Commercial Datasets for movie and actor lists](https://developer.imdb.com/non-commercial-datasets/)~~(This was true in previous game versions, but is no longer in use.)
+- [TMDb API for both actor and movie information](https://developer.themoviedb.org/docs/getting-started)
+- [Inflation Data provided by the US Bureau of Labor Statistics](https://data.bls.gov/timeseries/CUUR0000SA0L1E?output_view=pct_12mths)
+
 ## Background
-**Project Members:** Henry Shi, Owen Guo, Zach Lubarsky, Daniel Yan
+### Current Project Members: 
+[Henry Shi](https://github.com/Shilord)
 
-**Project Type:** Web App/Game
+### Original Project Members: 
+[Henry Shi](https://github.com/Shilord), [Owen Guo](https://github.com/haiguo123), [Zach Lubarsky](https://github.com/zlubars), [Daniel Yan](https://github.com/danielyan21)
 
-**Questions of Interest:** Can you reach a target actor from a starting actor by selecting movie + actor combinations in between?
+### Original Project Repo:
+[https://github.com/Shilord/Data515_MediaAnalysis_FinalProj](https://github.com/Shilord/Data515_MediaAnalysis_FinalProj) 
 
-**Project Output:** 
+### Purpose:
+My reasons for expanding on this game solo remains in line with the original purpose of this project when it was still a school assignment: "Through the development of this game/web app, we seek to enforce strong data science and software engineering practices including: 1) data acquisition, cleaning, merging, and analysis, 2) unit testing and modular programming, 3) writing code and algorithms for game/app logic, 4) following good development conventions with version control, CI/CD, linting, etc., and 5) designing a smooth UI experience with all of the data science and code abstracted away. We hope to provide an engaging and seamless game for users to enjoy."
 
-This project aims to create a web app that allows users to test their movie and actor knowledge in the form of a game inspired by popular parlor game [Six Degrees of Kevin Bacon](https://en.wikipedia.org/wiki/Six_Degrees_of_Kevin_Bacon). In this game, users are given a random starting actor and random target actor. They then connect the starting actor to another actor through a film they both appear in, and repeat until they reach the target actor. The goal of the game is to reach the target actor in as few movie + actor combinations as possible. An alternate, more challenging game mode is featured as well, in which players once again choose movie + actor combinations to reach the target actor, but score higher the lower the total box office sales (adjusted for inflation) of their chosen movies is, incentivizing creative picks of less well-known movies over simply the shortest path to the target actor.
+## Repo Structure
+**data/** - Retrieval/processing scripts and stored data.
 
-On the back-end of this web app, several datasets have be created, processed, and synthesized to form the necessary web of connections between actors and movies: 1) a list of actor data, 2) a comprehensive dataset of movies and cast with box office sales, and 3) a dataset containing inflation indices for the relevant time frame. The information is stored into efficient nested dictionaries and search algorithms are used calculate the optimal solution for both game modes. Scores are given to players based on how far their selections deviate from the optimal.
+**demo/** - A demo recording demonstrating the use/play of this game. This recording is outdated and based on the V1 version (the final version for this project as a school assignemnt).
 
-Through the development of this web app, we seek to enforce strong data science and software engineering practices including: 1) data acquisition, cleaning, merging, and analysis, 2) unit testing and modular programming, 3) writing code and algorithms for game/app logic, and 4) designing a smooth UI experience with all of the data science and code abstracted away. We hope to provide an engaging and seamless game for users to enjoy.
+**docs/** - Includes documentation created primarily during the ideation phase as well as the final presentation slides for when this was still a school assignment.
 
-**Data Sources:** 
-- IMDb's Non-Commercial Datasets for movie and actor lists: https://developer.imdb.com/non-commercial-datasets/
-- TMDb API for additional information not found on the IMDb datasets: https://developer.themoviedb.org/docs/getting-started
-- Inflation Data provided by the US Bureau of Labor Statistics: https://data.bls.gov/timeseries/CUUR0000SA0L1E?output_view=pct_12mths 
+**streamlit/** - The code for the app, including both the UI (created and deployed via Streamlit) and back-end logic. 
 
 ---
 
