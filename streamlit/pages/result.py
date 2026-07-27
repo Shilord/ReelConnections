@@ -1,6 +1,6 @@
 import streamlit as st
 
-from core.state import init_state, go_home
+from core.state import init_state, go_home, start_normal_mode, start_challenge_mode
 from core.game_logic import (
     calculate_score_shortest,
     calculate_score_boxoffice,
@@ -85,7 +85,10 @@ def render():
 
     with col1:
         if st.button("Play Again"):
-            st.session_state.current_view = "home"
+            if st.session_state.mode == "normal":
+                start_normal_mode(st.session_state.difficulty)
+            else:
+                start_challenge_mode(st.session_state.difficulty)
             st.rerun()
 
     with col2:
