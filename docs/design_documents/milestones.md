@@ -1,4 +1,0 @@
-# Milestones
-
-![Milestones](milestones.png)
-

@@ -1,7 +1,7 @@
 import pickle
 
 # Load game data
-with open("data/game_data.pkl", "rb") as f:
+with open("data/game_data_hard.pkl", "rb") as f:
     data = pickle.load(f)
 
 actors = data["actors"]

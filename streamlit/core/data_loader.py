@@ -4,9 +4,9 @@ import streamlit as st
 from core.game_logic import load_data
 
 DIFFICULTY_DATA_PATHS = {
-    "easy": "data/expanded-data/game_data_easy.pkl",
-    "medium": "data/expanded-data/game_data_medium.pkl",
-    "hard": "data/expanded-data/game_data_hard.pkl",
+    "easy": "data/game_data_easy.pkl",
+    "medium": "data/game_data_medium.pkl",
+    "hard": "data/game_data_hard.pkl",
 }
 
 

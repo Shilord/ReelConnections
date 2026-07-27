@@ -61,8 +61,7 @@ You should see `(reel-connections)` at the start of your terminal prompt confirm
 
 **4. Run the app**
 ```bash
-cd streamlit
-streamlit run app.py
+streamlit run streamlit/app.py
 ```
 
 ### Updating the Environment
