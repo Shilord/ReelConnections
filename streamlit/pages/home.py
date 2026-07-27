@@ -9,8 +9,8 @@ from core.state import (
 )
 
 DIFFICULTY_OPTIONS = {
-    "Easy (Top 1,000 actors)": "easy",
-    "Medium (Top 3,000 actors)": "medium",
+    "Easy (Top 500 actors)": "easy",
+    "Medium (Top 1,500 actors)": "medium",
     "Hard (Top 5,000 actors)": "hard",
 }
 
