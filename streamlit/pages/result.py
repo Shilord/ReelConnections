@@ -1,10 +1,21 @@
 import streamlit as st
 
-from core.state import init_state, go_home
+from core.state import init_state, go_home, start_normal_mode, start_challenge_mode
 from core.game_logic import (
     calculate_score_shortest,
     calculate_score_boxoffice,
 )
+
+def format_box_office(value):
+    if value is None:
+        return "N/A"
+    if value >= 1_000_000_000_000:
+        return f"${value / 1_000_000_000_000:.1f}T"
+    if value >= 1_000_000_000:
+        return f"${value / 1_000_000_000:.1f}B"
+    if value >= 1_000_000:
+        return f"${value / 1_000_000:.1f}M"
+    return f"${value:,}"
 
 def render():
     init_state()
@@ -37,8 +48,8 @@ def render():
 
         score = calculate_score_boxoffice(player_sum, optimal_sum)
 
-        st.write("Total Box Office:", player_sum)
-        st.write("Optimal Minimum Box Office:", optimal_sum)
+        st.write("Total Box Office:", format_box_office(player_sum))
+        st.write("Optimal Minimum Box Office:", format_box_office(optimal_sum))
         st.write("Score:", round(score, 2))
 
     if score == 100:
@@ -85,7 +96,10 @@ def render():
 
     with col1:
         if st.button("Play Again"):
-            st.session_state.current_view = "home"
+            if st.session_state.mode == "normal":
+                start_normal_mode(st.session_state.difficulty)
+            else:
+                start_challenge_mode(st.session_state.difficulty)
             st.rerun()
 
     with col2:

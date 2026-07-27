@@ -753,7 +753,7 @@ class TestBuildAndSaveMovies(unittest.TestCase):
             "original_title": "No Year Movie",
             "year": None,
             "adjusted_revenue": 50.0,
-            "actors": "nm0001",
+            "actors": "nm0001, nm0002",
         }]
         movies_path, actors_path = _write_parquets(rows, _ACTORS_ROWS, self.tmp_dir)
         data = build_and_save(
@@ -869,9 +869,12 @@ class TestBuildAndSaveActors(unittest.TestCase):
             "original_title": "Int ID Movie",
             "year": 2010.0,
             "adjusted_revenue": 75.0,
-            "actors": "42",
+            "actors": "42, 43",
         }]
-        actors = [{"tmdb_id": 42, "name": "Int Actor"}]
+        actors = [
+            {"tmdb_id": 42, "name": "Int Actor"},
+            {"tmdb_id": 43, "name": "Other Int Actor"},
+        ]
         movies_path, actors_path = _write_parquets(rows, actors, self.tmp_dir)
         data = build_and_save(
             movies_path, actors_path, os.path.join(self.tmp_dir, "int_id.pkl")
@@ -896,22 +899,50 @@ class TestBuildAndSaveEdgeCases(unittest.TestCase):
         self.assertEqual(data["movies"], {})
         self.assertEqual(data["actors"], {})
 
-    def test_single_movie_single_actor(self):
-        """A single movie with a single actor should produce one movie and one actor."""
+    def test_single_movie_two_actors(self):
+        """A single movie with exactly two actors is the smallest valid case."""
         rows = [{
             "movie_id": "tt0001",
-            "original_title": "Solo",
+            "original_title": "Duo",
             "year": 1999.0,
             "adjusted_revenue": 10.0,
-            "actors": "nm0001",
+            "actors": "nm0001, nm0002",
         }]
-        actors = [{"tmdb_id": "nm0001", "name": "Solo Actor"}]
+        actors = [
+            {"tmdb_id": "nm0001", "name": "First Actor"},
+            {"tmdb_id": "nm0002", "name": "Second Actor"},
+        ]
         movies_path, actors_path = _write_parquets(rows, actors, self.tmp_dir)
         data = build_and_save(
-            movies_path, actors_path, os.path.join(self.tmp_dir, "solo.pkl")
+            movies_path, actors_path, os.path.join(self.tmp_dir, "duo.pkl")
         )
         self.assertEqual(len(data["movies"]), 1)
-        self.assertEqual(len(data["actors"]), 1)
+        self.assertEqual(len(data["actors"]), 2)
+
+    def test_movie_left_with_single_actor_is_excluded(self):
+        """A movie whose actors were mostly filtered out of actors_parquet
+
+        (e.g. a difficulty tier covering only part of the full actor pool)
+        should be dropped once it's down to fewer than two actors, since a
+        single-actor movie can't function as a co-star "hop". The lone
+        remaining actor, having no other movies, should then be excluded too.
+        """
+        rows = [{
+            "movie_id": "tt0040",
+            "original_title": "Mostly Filtered",
+            "year": 2015.0,
+            "adjusted_revenue": 40.0,
+            "actors": "nm0001, nm0002, nm0003",
+        }]
+        # Only nm0001 is in the actor pool; nm0002/nm0003 are filtered out,
+        # same as they would be for a smaller difficulty tier.
+        actors = [{"tmdb_id": "nm0001", "name": "Alice"}]
+        movies_path, actors_path = _write_parquets(rows, actors, self.tmp_dir)
+        data = build_and_save(
+            movies_path, actors_path, os.path.join(self.tmp_dir, "thin.pkl")
+        )
+        self.assertEqual(data["movies"], {})
+        self.assertEqual(data["actors"], {})
 
     def test_all_movies_zero_box_office_produces_empty_result(self):
         """If every movie has zero box office, both dicts should be empty."""
